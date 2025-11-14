@@ -220,7 +220,8 @@ on run
 	set hasFailure to ((count of failedList) > 0)
 	if hasFailure then
 		display dialog msg buttons {"OK"} default button "OK" with icon caution giving up after 30
-	else
-		display dialog msg buttons {"OK"} default button "OK" with icon note giving up after 30
 	end if
+	
+	-- Quit the app when done
+	quit
 end run

@@ -52,6 +52,8 @@ bundle_icon() {
   local app="$1"; local icns="$2"
   cp "$icns" "$app/Contents/Resources/applet.icns"
   plutil -replace CFBundleIconFile -string "applet" "$app/Contents/Info.plist"
+  # Remove CFBundleIconName if it exists (can conflict with CFBundleIconFile)
+  plutil -remove CFBundleIconName "$app/Contents/Info.plist" 2>/dev/null || true
 }
 
 # Always ad-hoc sign; upgrade to Developer ID if SIGN_ID is set
@@ -104,7 +106,12 @@ xattr -dr com.apple.quarantine "$APP_PATH" >/dev/null 2>&1 || true
 # Sign (ad-hoc always, Developer ID if provided)
 sign_app "$APP_PATH" "$SIGN_ID"
 
-echo "📦 Creating ZIP…"
+# Refresh icon cache
+echo "🔄 Refreshing icon cache…"
+touch "$APP_PATH"
+killall Finder 2>/dev/null || true
+
+echo "�� Creating ZIP…"
 zip_app "$APP_PATH" "$ZIP_PATH"
 
 echo "✅ Built: $APP_PATH"
